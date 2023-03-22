@@ -1,5 +1,6 @@
 package com.example.jwt.config;
 
+import com.example.jwt.filter.MyFilter3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 
 // https://github.com/spring-projects/spring-security/issues/10822 참고
@@ -24,6 +25,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
         return http
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //session 사용 X
