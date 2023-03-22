@@ -26,6 +26,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
+
         return http
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //session 사용 X
