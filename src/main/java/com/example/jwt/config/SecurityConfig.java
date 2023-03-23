@@ -1,5 +1,6 @@
 package com.example.jwt.config;
 
+import com.example.jwt.config.jwt.JwtAuthenticationFilter;
 import com.example.jwt.filter.MyFilter3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
+//        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
 
         return http
                 .csrf().disable()
@@ -33,6 +34,8 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable() //Form 로그인 방식 사용 X
                 .httpBasic().disable() //Http 로그인 방식 사용 X
+                .apply(new MyCustomDsl())
+                .and()
                 .authorizeRequests(authroize -> authroize.antMatchers("/api/v1/user/**")
                         .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')") //user 페이지 => 모든 role 가능
                         .antMatchers("/api/v1/manager/**") //manager 페이지 => manager, admin 만 가능
@@ -48,7 +51,10 @@ public class SecurityConfig {
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
-                    .addFilter(corsConfig.corsFilter());
+                    .addFilter(corsConfig.corsFilter())
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager));
         }
     }
+
+
 }
